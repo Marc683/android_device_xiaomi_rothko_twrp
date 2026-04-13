@@ -29,13 +29,15 @@ jobs:
 
       - name: Init & sync recovery sources
         run: |
+          set -euxo pipefail
           mkdir -p $GITHUB_WORKSPACE/work
           cd $GITHUB_WORKSPACE/work
 
-          # If this manifest/branch doesn't exist, the job will fail here.
-          # Tell me the error and I'll give you the correct A16-capable manifest line.
           repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14
-          repo sync -j$(nproc) --force-sync --no-clone-bundle --no-tags
+
+          # Much lighter sync to avoid hanging/timeouts
+          repo sync -c -j2 --force-sync --no-clone-bundle --no-tags --prune
+
 
       - name: Copy device tree into sources
         run: |
