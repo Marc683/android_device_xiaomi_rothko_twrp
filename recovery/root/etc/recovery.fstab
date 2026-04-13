@@ -1,0 +1,3 @@
+/dev/block/by-name/metadata   /metadata   f2fs   flags=display="metadata";wipeingui;backup=1
+/dev/block/by-name/userdata   /data       f2fs   flags=display="data";wipeingui;quota
+/dev/block/by-name/super      /super      emmc   flags=display="super"
