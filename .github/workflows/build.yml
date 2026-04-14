@@ -43,7 +43,6 @@ jobs:
           cd "$GITHUB_WORKSPACE/work"
 
           repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrs
-        
 
 
       - name: Copy device tree into sources
