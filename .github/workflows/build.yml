@@ -36,19 +36,13 @@ jobs:
           df -h
 
 
-      - name: Init & sync recovery sources
+            - name: Init & sync recovery sources
         run: |
           set -euxo pipefail
-          mkdir -p $GITHUB_WORKSPACE/work
-          cd $GITHUB_WORKSPACE/work
+          mkdir -p "$GITHUB_WORKSPACE/work"
+          cd "$GITHUB_WORKSPACE/work"
 
-          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14 --depth=1
-
-repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
-
-
-
-          # Much lighter sync to avoid hanging/timeouts
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrs
         
 
 
