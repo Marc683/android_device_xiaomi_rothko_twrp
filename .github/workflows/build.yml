@@ -12,6 +12,14 @@ jobs:
         with:
           path: device/xiaomi/rothko
 
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo apt-get clean
+          df -h
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -27,37 +35,28 @@ jobs:
           chmod +x ~/bin/repo
           echo "$HOME/bin" >> $GITHUB_PATH
 
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo apt-get clean
-          df -h
-
-
-            - name: Init & sync recovery sources
+      - name: Init & sync recovery sources
         run: |
           set -euxo pipefail
           mkdir -p "$GITHUB_WORKSPACE/work"
           cd "$GITHUB_WORKSPACE/work"
 
-          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrs
-
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14 --depth=1
+          repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
 
       - name: Copy device tree into sources
         run: |
-          cd $GITHUB_WORKSPACE/work
+          cd "$GITHUB_WORKSPACE/work"
           rm -rf device/xiaomi/rothko
           mkdir -p device/xiaomi
-          cp -a $GITHUB_WORKSPACE/device/xiaomi/rothko device/xiaomi/rothko
+          cp -a "$GITHUB_WORKSPACE/device/xiaomi/rothko" device/xiaomi/rothko
 
       - name: Build vendor_boot image
         run: |
-          cd $GITHUB_WORKSPACE/work
+          cd "$GITHUB_WORKSPACE/work"
           source build/envsetup.sh
           lunch twrp_rothko-eng
-          mka vendorbootimage -j$(nproc)
+          mka vendorbootimage -j"$(nproc)"
 
       - name: Upload vendor_boot.img
         uses: actions/upload-artifact@v4
