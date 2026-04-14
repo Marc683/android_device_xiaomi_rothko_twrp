@@ -14,6 +14,7 @@ jobs:
 
       - name: Free disk space
         run: |
+          df -h
           sudo rm -rf /usr/local/lib/android || true
           sudo rm -rf /usr/share/dotnet || true
           sudo rm -rf /opt/ghc || true
@@ -42,7 +43,8 @@ jobs:
           cd "$GITHUB_WORKSPACE/work"
 
           repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14 --depth=1
-          repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
+          repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch \
+            --partial-clone --clone-filter=blob:none
 
       - name: Copy device tree into sources
         run: |
