@@ -11,9 +11,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: device/xiaomi/rothko
+          fetch-depth: 1
 
       - name: Free disk space
         run: |
+          set -eux
           df -h
           sudo rm -rf /usr/local/lib/android || true
           sudo rm -rf /usr/share/dotnet || true
@@ -23,6 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -eux
           sudo apt-get update
           sudo apt-get install -y \
             bc bison build-essential ccache curl flex g++-multilib gcc-multilib \
@@ -31,10 +34,12 @@ jobs:
 
       - name: Install repo tool
         run: |
+          set -eux
           mkdir -p ~/bin
           curl -L https://storage.googleapis.com/git-repo-downloads/repo -o ~/bin/repo
           chmod +x ~/bin/repo
-          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+          repo --version || true
 
       - name: Init & sync recovery sources
         run: |
@@ -43,11 +48,11 @@ jobs:
           cd "$GITHUB_WORKSPACE/work"
 
           repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-14 --depth=1
-          repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch \
-            --partial-clone --clone-filter=blob:none
+          repo sync -c -j1 --force-sync --no-clone-bundle --no-tags --prune --optimized-fetch
 
       - name: Copy device tree into sources
         run: |
+          set -eux
           cd "$GITHUB_WORKSPACE/work"
           rm -rf device/xiaomi/rothko
           mkdir -p device/xiaomi
@@ -55,6 +60,7 @@ jobs:
 
       - name: Build vendor_boot image
         run: |
+          set -eux
           cd "$GITHUB_WORKSPACE/work"
           source build/envsetup.sh
           lunch twrp_rothko-eng
